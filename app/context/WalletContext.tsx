@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
+import { PrepareCallsResponse } from "../lib/types";
 
 interface LoginData {
   credential: {
@@ -10,15 +11,6 @@ interface LoginData {
     clientDataJSON: string;
     signature: string;
   };
-}
-
-interface PrepareCallsData {
-  capabilities: Record<string, any>;
-  chainId: string;
-  context: unknown;
-  key?: any;
-  digest: string;
-  version: string;
 }
 
 interface SignData {
@@ -36,8 +28,8 @@ interface WalletContextType {
   isLoggedIn: boolean;
 
   // Prepare calls state
-  prepareCallsData: PrepareCallsData | null;
-  setPrepareCallsData: (data: PrepareCallsData | null) => void;
+  prepareCallsData: PrepareCallsResponse | null;
+  setPrepareCallsData: (data: PrepareCallsResponse | null) => void;
   isCallsPrepared: boolean;
 
   // Sign state
@@ -55,7 +47,7 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [loginData, setLoginData] = useState<LoginData | null>(null);
   const [prepareCallsData, setPrepareCallsData] =
-    useState<PrepareCallsData | null>(null);
+    useState<PrepareCallsResponse | null>(null);
   const [signData, setSignData] = useState<SignData | null>(null);
   const [isSent, setIsSent] = useState(false);
 

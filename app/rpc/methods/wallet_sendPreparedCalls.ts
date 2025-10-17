@@ -27,14 +27,14 @@ export async function handleWalletSendPreparedCalls(
   let userOperation = validatedParams.context.data;
   userOperation.signature = validatedParams.signature;
 
-  const res = await bundlerClient.request({
+  const userOpHash = await bundlerClient.request({
     method: "eth_sendUserOperation",
     params: [formatUserOperationRequest(userOperation), entryPoint06Address],
   });
-  console.log("res:", res);
+  console.log({ userOpHash });
 
   return {
-    id: ox.Hex.fromNumber(Date.now()), // Unique identifier for the sent calls
+    id: userOpHash,
     capabilities: validatedParams.capabilities,
   };
 }

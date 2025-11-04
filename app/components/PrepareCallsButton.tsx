@@ -5,6 +5,7 @@ import { useWallet } from "../context/WalletContext";
 import { StepButton } from "./StepButton";
 import { toHex } from "viem";
 import { CONNER_PUBLIC_KEY } from "../lib/constants";
+import { Attribution } from "ox/erc8021";
 
 export function PrepareCallsButton() {
   const { isLoggedIn, loginData, setPrepareCallsData } = useWallet();
@@ -36,6 +37,9 @@ export function PrepareCallsButton() {
             },
             chainId: toHex(baseSepolia.id),
             version: "1.0",
+            capabilities: {
+              "dataSuffix": Attribution.toDataSuffix({codes: ["account"]})
+            }
           },
         ],
         id: 1,

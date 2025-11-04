@@ -17,7 +17,7 @@ import {
   toWebAuthnAccount,
 } from "viem/account-abstraction";
 import { getUserOperationHash } from "viem/account-abstraction";
-import { toNumber } from "ox/Hex";
+import { concat, toNumber } from "ox/Hex";
 import { serializeBigInt } from "@/app/lib/serialize";
 import type { UserOperation } from "ox/erc4337";
 import { CONNER_PUBLIC_KEY } from "@/app/lib/constants";
@@ -73,25 +73,37 @@ export async function handleWalletPrepareCalls(
 ): Promise<PrepareCallsResponse> {
   // Validate parameters according to EIP-7836
   const validatedParams = validatePrepareCallsParams(params);
+  console.log({ validatedParams });
 
-  console.log("wallet_prepareCalls called with params:", validatedParams);
-
+  // Create owner from passkey public key
   const owner = toWebAuthnAccount({
     credential: {
       id: "",
       publicKey: CONNER_PUBLIC_KEY,
     },
   });
+  console.log({ owner });
+
+  // Create account with single owner
   const account = await toAccount(owner);
+  console.log({ account });
+
+  // Prepare user operation
   let userOperation: any = await bundlerClient.prepareUserOperation({
     account,
     calls: validatedParams.calls,
-    paymaster: true, // use client as 7677 paymaster
+    // paymaster: true, // use client as 7677 paymaster
   });
   delete userOperation.account;
+  console.log({ userOperation });
 
-  console.log("userOperation:", userOperation);
+  // Append dataSuffix to calldata
+  const dataSuffix = validatedParams.capabilities?.["dataSuffix"];
+  if (dataSuffix) {
+    userOperation.callData = concat(userOperation.callData, dataSuffix);
+  }
 
+  // Get digest of user operation
   const digest = getUserOperationHash({
     chainId: toNumber(validatedParams.chainId),
     entryPointAddress: entryPoint06Address,

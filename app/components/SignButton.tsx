@@ -37,7 +37,10 @@ export function SignButton() {
     const account = await toAccount(owner);
     console.log({account})
 
-    let signature = await account.signUserOperation(prepareCallsData.context.data)
+    const userOperation = prepareCallsData.context.data;
+    console.log({userOperation})
+
+    let signature = await account.signUserOperation(userOperation)
     if (isErc6492Signature(signature)) {
       const {signature: innerSignature} = parseErc6492Signature(signature)
       signature = innerSignature;

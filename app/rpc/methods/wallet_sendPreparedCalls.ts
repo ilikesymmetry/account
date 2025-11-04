@@ -23,10 +23,15 @@ export async function handleWalletSendPreparedCalls(
 ): Promise<SendPreparedCallsResponse> {
   // Validate parameters according to EIP-7836
   const validatedParams = validateSendPreparedCallsParams(params);
-  console.log("wallet_sendPreparedCalls called with params:", validatedParams);
+  console.log({ validatedParams });
+
+  // Parse user operation
   let userOperation = validatedParams.context.data;
+
+  // Override userOp signature to the one provided in the request
   userOperation.signature = validatedParams.signature;
 
+  // Send user operation to bundler
   const userOpHash = await bundlerClient.request({
     method: "eth_sendUserOperation",
     params: [formatUserOperationRequest(userOperation), entryPoint06Address],

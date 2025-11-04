@@ -92,6 +92,8 @@ export async function handleWalletPrepareCalls(
   let userOperation: any = await bundlerClient.prepareUserOperation({
     account,
     calls: validatedParams.calls,
+    // paymaster not compatible with dataSuffix because signs over callData before appending
+    // TODO: need to do paymaster step after callData attribution appending
     // paymaster: true, // use client as 7677 paymaster
   });
   delete userOperation.account;
